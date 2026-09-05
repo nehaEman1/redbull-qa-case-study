@@ -1,7 +1,7 @@
 # QA Case Study
 ## Manual Testing
 
-Manual testing was performed for Task #1 – Devices Filters.
+Manual testing was performed for Ticket #1 – Devices Filters.
 
 Coverage included:
 - Status filter correctness
@@ -26,7 +26,7 @@ The automated UI tests are implemented using:
 - Selenium WebDriver
 - Google Chrome
 
-## Task #1 – Devices Filters
+## Ticket #1 – Devices Filters
 File:
 `test_devices_filters.py`
 
