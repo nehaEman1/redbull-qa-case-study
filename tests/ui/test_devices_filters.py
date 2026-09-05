@@ -1,5 +1,4 @@
 import os
-import pytest
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -10,59 +9,73 @@ from selenium.webdriver.support import expected_conditions as EC
 
 BASE_URL = "https://qa-sample-neha-eman.up.railway.app/"
 
+EMAIL_XPATH = '//*[@id="root"]/div/div/div/form/div[1]/input'
+PASSWORD_XPATH = '//*[@id="root"]/div/div/div/form/div[2]/input'
+LOGIN_BUTTON_XPATH = '//*[@id="root"]/div/div/div/form/button'
+CORE_SERVICES_XPATH = "/html/body/div/div/div/main/section/div[1]/div[2]/select"
 
-@pytest.fixture
-def driver():
+
+def test_core_services_outdated_filter():
     driver = webdriver.Chrome()
     driver.maximize_window()
-    driver.get(BASE_URL)
+    wait = WebDriverWait(driver, 15)
 
-    yield driver
+    try:
+        # Open app
+        driver.get(BASE_URL)
 
-    driver.quit()
+        # Login
+        wait.until(
+            EC.presence_of_element_located((By.XPATH, EMAIL_XPATH))
+        ).send_keys(os.getenv("TEST_EMAIL"))
 
+        driver.find_element(
+            By.XPATH,
+            PASSWORD_XPATH
+        ).send_keys(os.getenv("TEST_PASSWORD"))
 
-def test_core_services_outdated_filter(driver):
-    """
-    Ticket #1 - Devices Filters
+        driver.find_element(
+            By.XPATH,
+            LOGIN_BUTTON_XPATH
+        ).click()
 
-    Verify that Core Services = Outdated returns only
-    devices whose Core Services status is Outdated.
-
-    Regression coverage for Bug #12.
-    """
-
-    wait = WebDriverWait(driver, 10)
-
-    # Locate the Core Services dropdown
-    core_services_dropdown = wait.until(
-        EC.element_to_be_clickable(
-            (
-                By.XPATH,
-                "/html/body/div/div/div/main/section/div[1]/div[2]/select"
+        # Wait for Devices page
+        dropdown = wait.until(
+            EC.element_to_be_clickable(
+                (By.XPATH, CORE_SERVICES_XPATH)
             )
         )
-    )
 
-    # Select "Outdated"
-    Select(core_services_dropdown).select_by_visible_text("Outdated")
+        # Remember table before filtering
+        old_table = driver.find_element(
+            By.CSS_SELECTOR,
+            "tbody"
+        ).text
 
-    # Wait until device rows are available
-    rows = wait.until(
-        EC.presence_of_all_elements_located(
-            (By.CSS_SELECTOR, "tbody tr")
+        # Select Outdated
+        Select(dropdown).select_by_visible_text("Outdated")
+
+        # Wait until table actually changes
+        wait.until(
+            lambda d: d.find_element(
+                By.CSS_SELECTOR,
+                "tbody"
+            ).text != old_table
         )
-    )
 
-    assert len(rows) > 0, "No devices were returned for Outdated filter"
-
-    # Check the Core Services value of every returned row
-    for row in rows:
-        cells = row.find_elements(By.TAG_NAME, "td")
-
-        core_services_value = cells[2].text.strip()
-
-        assert core_services_value == "Outdated", (
-            f"Expected Core Services = 'Outdated', "
-            f"but found '{core_services_value}'"
+        # Read filtered rows
+        rows = driver.find_elements(
+            By.CSS_SELECTOR,
+            "tbody tr"
         )
+
+        for row in rows:
+            cells = row.find_elements(By.TAG_NAME, "td")
+            core_services = cells[2].text.strip()
+
+            assert core_services == "Outdated", (
+                f"Expected 'Outdated' but found '{core_services}'"
+            )
+
+    finally:
+        driver.quit()
