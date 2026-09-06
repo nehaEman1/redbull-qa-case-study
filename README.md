@@ -91,7 +91,7 @@ set TEST_PASSWORD=<test-password>
 ```
 
 ## Running the Test
-
+## UI test
 Run:
 
 ```bash
@@ -109,4 +109,18 @@ Current QA behavior:
 ```text
 test_core_services_outdated_filter FAILED
 Expected 'Outdated' but found 'Unavailable'
+```
+
+## API test
+Run: 
+
+```bash
+pytest automated-tests/api/offline_device_api.py -v
+```
+
+Current QA behavior:
+
+```text
+FAILED
+Expected a non-5xx response for offline device, but got 500
 ```
