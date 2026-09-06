@@ -28,10 +28,10 @@ The automated UI tests are implemented using:
 
 ## Ticket #1 – Devices Filters
 File:
-`test_devices_filters.py`
+automated-tests/ui/test_devices_filters.py
 
 ### Automated Scenario
-**Ticket 1 - Core Services – Outdated Filter**
+### Ticket 1 - Core Services – Outdated Filter
 
 The test verifies that when **Core Services = Outdated** is selected, every device returned in the table has a Core Services value of **Outdated**.
 
@@ -53,7 +53,7 @@ Once the defect is fixed, the same test can be used as a regression test to ensu
 
 ### Ticket 2 - Automated API Regression – Offline Device Command
 
-File: `offline_device_api.py`
+File: automated-tests/api/offline_device_api.py
 
 This test covers the defect where `POST /api/devices/command`
 returns `500 Internal Server Error` when a command targets an offline device.
@@ -78,7 +78,7 @@ After the defect is fixed, the same test can be retained as regression coverage.
 
 Install the required packages:
 ```bash
-pip install selenium pytest
+pip install selenium pytest requests
 ```
 
 The test credentials are provided through environment variables rather than being stored in the source code.
