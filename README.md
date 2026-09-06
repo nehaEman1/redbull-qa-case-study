@@ -118,6 +118,13 @@ Run:
 pytest automated-tests/api/offline_device_api.py -v
 ```
 
+Expected behavior after Bug #17 is fixed:
+
+
+The API should return a clear client/business error indicating that the command cannot be executed because the device is offline.
+The response should not expose internal stack traces.
+
+
 Current QA behavior:
 
 ```text
