@@ -31,7 +31,7 @@ File:
 `test_devices_filters.py`
 
 ### Automated Scenario
-**Core Services – Outdated Filter**
+**Ticket 1 - Core Services – Outdated Filter**
 
 The test verifies that when **Core Services = Outdated** is selected, every device returned in the table has a Core Services value of **Outdated**.
 
@@ -49,6 +49,30 @@ Test flow:
 This test provides regression coverage for **Bug #12 – Core Services "Outdated" filter incorrectly returns devices that are "Unavailable"**.
 The test currently fails in the QA environment because devices with `Core Services = Unavailable` are returned when the `Outdated` filter is selected.
 Once the defect is fixed, the same test can be used as a regression test to ensure the issue does not reoccur.
+
+
+### Ticket 2 - Automated API Regression – Offline Device Command
+
+File: `offline_device_api.py`
+
+This test covers the defect where `POST /api/devices/command`
+returns `500 Internal Server Error` when a command targets an offline device.
+
+The test:
+
+1. Authenticates through `/api/auth/signin`.
+2. Obtains a JWT.
+3. Sends `update_core_services` to a known offline device.
+4. Verifies that an expected offline-device condition does not return a 5xx response.
+5. Verifies that internal stack-trace information is not exposed.
+
+**Current result: FAIL**
+
+The test currently fails because the API returns HTTP `500` for the offline
+device condition. This is the expected test result while the reported defect
+remains unresolved.
+
+After the defect is fixed, the same test can be retained as regression coverage.
 
 ## Setup
 
